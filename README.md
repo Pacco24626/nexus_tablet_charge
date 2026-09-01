@@ -1,3 +1,5 @@
+<img src="icons/logo.png" alt="Nexus Tablet Charge" width="360">
+
 # Nexus Tablet Charge
 
 Gestione del ciclo di carica dei tablet a muro in Home Assistant, configurabile
