@@ -1,0 +1,13 @@
+{
+  "domain": "nexus_tablet_charge",
+  "name": "Nexus Tablet Charge",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["persistent_notification"],
+  "documentation": "https://github.com/Pacco24626/nexus_tablet_charge",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Pacco24626/nexus_tablet_charge/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

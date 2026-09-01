@@ -1,0 +1,92 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "New tablet group",
+        "description": "Name the group. You can create more than one if you manage separate sites.",
+        "data": {
+          "name": "Group name"
+        }
+      },
+      "tablet": {
+        "title": "Tablet {number}",
+        "description": "The battery sensor is the one from the Home Assistant companion app installed on the tablet: enable it in App Settings, Sensors. The output is the one powering the charger.",
+        "data": {
+          "name": "Tablet name",
+          "battery_entity": "Battery level sensor",
+          "charger_entity": "Charger output",
+          "min_level": "Charge threshold",
+          "max_level": "Stop threshold",
+          "add_another": "Add another tablet"
+        }
+      },
+      "sicurezza": {
+        "title": "Safeguards",
+        "description": "Below the critical level the charger runs regardless. If the sensor reports nothing for the given hours the charger is switched on: without a trustworthy reading, leaving it off means ending up with a flat tablet and a black screen.",
+        "data": {
+          "critical": "Critical level",
+          "stale_hours": "Hours without data before fail-safe"
+        }
+      }
+    },
+    "error": {
+      "soglie_incrociate": "The stop threshold must be higher than the charge threshold."
+    },
+    "abort": {
+      "already_configured": "A group with this name already exists."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Group configuration",
+        "menu_options": {
+          "tablets": "Tablets",
+          "sicurezza": "Safeguards"
+        }
+      },
+      "tablet": {
+        "title": "Tablet {number}",
+        "description": "Tablets are declared again from scratch: confirm or correct each one, then untick to finish.",
+        "data": {
+          "name": "Tablet name",
+          "battery_entity": "Battery level sensor",
+          "charger_entity": "Charger output",
+          "min_level": "Charge threshold",
+          "max_level": "Stop threshold",
+          "add_another": "Add another tablet"
+        }
+      },
+      "sicurezza": {
+        "title": "Safeguards",
+        "data": {
+          "critical": "Critical level",
+          "stale_hours": "Hours without data before fail-safe"
+        }
+      }
+    },
+    "error": {
+      "soglie_incrociate": "The stop threshold must be higher than the charge threshold."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "tablet_status": {
+        "state": {
+          "charging": "Charging",
+          "discharging": "Discharging",
+          "critical": "Emergency charge",
+          "forced": "Forced charge",
+          "failsafe": "Fail-safe",
+          "disabled": "Not managed"
+        }
+      },
+      "group_status": {
+        "state": {
+          "ok": "Normal",
+          "failsafe": "Fail-safe active"
+        }
+      }
+    }
+  }
+}

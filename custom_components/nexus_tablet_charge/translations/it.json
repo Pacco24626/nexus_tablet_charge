@@ -1,0 +1,92 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Nuovo gruppo di tablet",
+        "description": "Dai un nome al gruppo. Puoi crearne piu' d'uno se gestisci impianti diversi.",
+        "data": {
+          "name": "Nome gruppo"
+        }
+      },
+      "tablet": {
+        "title": "Tablet {number}",
+        "description": "Il sensore di batteria e' quello della companion app di Home Assistant installata sul tablet: va abilitato in Impostazioni app, Sensori. L'uscita e' quella che alimenta il caricabatterie.",
+        "data": {
+          "name": "Nome tablet",
+          "battery_entity": "Sensore livello batteria",
+          "charger_entity": "Uscita del caricatore",
+          "min_level": "Soglia di ricarica",
+          "max_level": "Soglia di stop",
+          "add_another": "Aggiungi un altro tablet"
+        }
+      },
+      "sicurezza": {
+        "title": "Protezioni",
+        "description": "Sotto la soglia critica si carica comunque. Se il sensore non riporta nulla per le ore indicate il caricatore viene acceso: senza un dato attendibile, lasciarlo spento significa arrivare a tablet scarico e schermo nero.",
+        "data": {
+          "critical": "Soglia critica",
+          "stale_hours": "Ore senza dati prima del fail-safe"
+        }
+      }
+    },
+    "error": {
+      "soglie_incrociate": "La soglia di stop deve essere piu' alta della soglia di ricarica."
+    },
+    "abort": {
+      "already_configured": "Esiste gia' un gruppo con questo nome."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configurazione gruppo",
+        "menu_options": {
+          "tablets": "Tablet",
+          "sicurezza": "Protezioni"
+        }
+      },
+      "tablet": {
+        "title": "Tablet {number}",
+        "description": "I tablet vengono ridichiarati da capo: conferma o correggi ognuno, e togli la spunta per terminare.",
+        "data": {
+          "name": "Nome tablet",
+          "battery_entity": "Sensore livello batteria",
+          "charger_entity": "Uscita del caricatore",
+          "min_level": "Soglia di ricarica",
+          "max_level": "Soglia di stop",
+          "add_another": "Aggiungi un altro tablet"
+        }
+      },
+      "sicurezza": {
+        "title": "Protezioni",
+        "data": {
+          "critical": "Soglia critica",
+          "stale_hours": "Ore senza dati prima del fail-safe"
+        }
+      }
+    },
+    "error": {
+      "soglie_incrociate": "La soglia di stop deve essere piu' alta della soglia di ricarica."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "tablet_status": {
+        "state": {
+          "charging": "In carica",
+          "discharging": "In scarica",
+          "critical": "Carica d'emergenza",
+          "forced": "Carica forzata",
+          "failsafe": "Fail-safe",
+          "disabled": "Non gestito"
+        }
+      },
+      "group_status": {
+        "state": {
+          "ok": "Regolare",
+          "failsafe": "Fail-safe attivo"
+        }
+      }
+    }
+  }
+}
