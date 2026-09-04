@@ -91,3 +91,7 @@ conseguenza. Il parametro esiste per questo.
 
 [Nexus Tablet Charge Card](https://github.com/Pacco24626/nexus_tablet_charge_card) —
 facoltativa. Senza, il gruppo si comanda con le card standard.
+
+## Licenza
+
+Apache 2.0 — Copyright 2026 Automatic Systems. Vedi [LICENSE](LICENSE).
