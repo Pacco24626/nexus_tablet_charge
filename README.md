@@ -87,10 +87,29 @@ posizione **"Sempre"**. Poi tieni d'occhio per un giorno la cronologia del senso
 di batteria: se vedi buchi da quattro o cinque ore, alza `stale_hours` di
 conseguenza. Il parametro esiste per questo.
 
-## Card dedicata
+## Scheda dedicata
 
-[Nexus Tablet Charge Card](https://github.com/Pacco24626/nexus_tablet_charge_card) —
-facoltativa. Senza, il gruppo si comanda con le card standard.
+**Dalla 1.1.0 la scheda e' dentro l'integrazione**: la serve e la registra lei come
+risorsa Lovelace, con la versione nell'URL. Niente da installare a parte, niente risorsa
+da aggiungere a mano, niente cache da svuotare dopo un aggiornamento.
+
+La si aggiunge alla plancia come qualunque altra scheda, cercando *Nexus Tablet Charge*
+fra le schede personalizzate. Senza, il gruppo si comanda con le schede standard.
+
+### Chi arriva dalla 1.0.x
+
+Se avevi installato **Nexus Tablet Charge Card** come pacchetto separato da HACS, dopo
+l'aggiornamento lo stesso file risulterebbe caricato **due volte** — una dall'integrazione
+e una da HACS — e il browser userebbe quello che arriva per primo. Una volta sola:
+
+1. **Impostazioni → Plance → Risorse**: togli la riga che punta a
+   `/hacsfiles/nexus_tablet_charge_card/nexus-tablet-charge-card.js`.
+2. **HACS**: disinstalla *Nexus Tablet Charge Card*.
+3. Ricarica la pagina.
+
+L'integrazione lo segnala anche nel registro all'avvio, finche' la vecchia risorsa resta.
+Il repository della scheda separata non viene piu' aggiornato: la versione buona e' quella
+dentro l'integrazione.
 
 ## Licenza
 

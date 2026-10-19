@@ -46,7 +46,12 @@ class ManagementSwitch(TabletEntity, SwitchEntity, RestoreEntity):
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
         if (last := await self.async_get_last_state()) is not None:
-            await self.controller.async_set_enabled(self._tablet_id, last.state == "on")
+            # Senza riconciliare: a boot in corso i sensori della companion sono
+            # sconosciuti e ogni tablet finirebbe in sicurezza. Vedi il commento
+            # in controller.async_set_enabled.
+            await self.controller.async_set_enabled(
+                self._tablet_id, last.state == "on", riconcilia=False
+            )
 
     @property
     def is_on(self) -> bool:

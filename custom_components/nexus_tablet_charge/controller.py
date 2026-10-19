@@ -66,6 +66,10 @@ class Tablet:
     charger_entity: str
     min_level: float
     max_level: float
+    # Vero se la soglia e' scritta nella configurazione: in quel caso vince
+    # lei, e lo stato ripristinato all'avvio non la tocca.
+    min_configurato: bool = False
+    max_configurato: bool = False
 
     # --- runtime ---
     enabled: bool = True
@@ -92,6 +96,8 @@ class ChargeController:
                 charger_entity=t[CONF_CHARGER_ENTITY],
                 min_level=float(t.get(CONF_MIN_LEVEL, DEFAULT_MIN_LEVEL)),
                 max_level=float(t.get(CONF_MAX_LEVEL, DEFAULT_MAX_LEVEL)),
+                min_configurato=CONF_MIN_LEVEL in t,
+                max_configurato=CONF_MAX_LEVEL in t,
             )
             for t in cfg.get(CONF_TABLETS, [])
         ]
@@ -165,22 +171,37 @@ class ChargeController:
     def get_tablet(self, tablet_id: str) -> Tablet | None:
         return next((t for t in self.tablets if t.id == tablet_id), None)
 
-    async def async_set_min(self, tablet_id: str, value: float) -> None:
+    # `riconcilia=False` serve al ripristino degli stati all'avvio: li' il
+    # valore va messo nel tablet, ma agire sui caricatori no. A boot in corso
+    # i sensori della companion app sono ancora sconosciuti e la
+    # riconciliazione scavalcherebbe la guardia di async_setup, mandando ogni
+    # tablet in sicurezza: caricatore acceso e notifica «non risponde» a ogni
+    # riavvio. La prima riconciliazione la fa l'evento di avvio.
+    async def async_set_min(
+        self, tablet_id: str, value: float, *, riconcilia: bool = True
+    ) -> None:
         if (tablet := self.get_tablet(tablet_id)) is not None:
             tablet.min_level = value
-            await self.async_reconcile()
+            if riconcilia:
+                await self.async_reconcile()
 
-    async def async_set_max(self, tablet_id: str, value: float) -> None:
+    async def async_set_max(
+        self, tablet_id: str, value: float, *, riconcilia: bool = True
+    ) -> None:
         if (tablet := self.get_tablet(tablet_id)) is not None:
             tablet.max_level = value
-            await self.async_reconcile()
+            if riconcilia:
+                await self.async_reconcile()
 
-    async def async_set_enabled(self, tablet_id: str, value: bool) -> None:
+    async def async_set_enabled(
+        self, tablet_id: str, value: bool, *, riconcilia: bool = True
+    ) -> None:
         if (tablet := self.get_tablet(tablet_id)) is not None:
             tablet.enabled = value
             if not value:
                 tablet.force = False
-            await self.async_reconcile()
+            if riconcilia:
+                await self.async_reconcile()
 
     async def async_force_charge(self, tablet_id: str) -> None:
         """Carica fino alla soglia di stop, poi torna al ciclo normale."""

@@ -36,18 +36,33 @@ class _SogliaNumber(TabletEntity, NumberEntity, RestoreEntity):
     def __init__(self, controller: ChargeController, tablet: Tablet, key: str) -> None:
         super().__init__(controller, tablet_key(tablet.id, key))
         self._tablet_id = tablet.id
+        self._chiave = key
+
+    def _dalla_configurazione(self) -> bool:
+        """Vero se questa soglia e' scritta nelle opzioni della voce."""
+        tablet = self.controller.get_tablet(self._tablet_id)
+        if tablet is None:
+            return False
+        return tablet.min_configurato if self._chiave == KEY_MIN else tablet.max_configurato
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
+        if self._dalla_configurazione():
+            # La soglia la decide la configurazione. Senza questo, salvare le
+            # opzioni ricaricava la voce e il vecchio stato ripristinato si
+            # rimetteva al posto del valore appena scelto dall'utente.
+            return
         last = await self.async_get_last_state()
         if last is None:
             return
         try:
-            await self._async_apply(float(last.state))
+            # Si applica il valore, ma senza riconciliare: vedi il commento in
+            # controller.async_set_min.
+            await self._async_apply(float(last.state), riconcilia=False)
         except (TypeError, ValueError):
             pass
 
-    async def _async_apply(self, value: float) -> None:
+    async def _async_apply(self, value: float, *, riconcilia: bool = True) -> None:
         raise NotImplementedError
 
     async def async_set_native_value(self, value: float) -> None:
@@ -68,8 +83,8 @@ class MinLevelNumber(_SogliaNumber):
         tablet = self.controller.get_tablet(self._tablet_id)
         return tablet.min_level if tablet else None
 
-    async def _async_apply(self, value: float) -> None:
-        await self.controller.async_set_min(self._tablet_id, value)
+    async def _async_apply(self, value: float, *, riconcilia: bool = True) -> None:
+        await self.controller.async_set_min(self._tablet_id, value, riconcilia=riconcilia)
 
 
 class MaxLevelNumber(_SogliaNumber):
@@ -86,5 +101,5 @@ class MaxLevelNumber(_SogliaNumber):
         tablet = self.controller.get_tablet(self._tablet_id)
         return tablet.max_level if tablet else None
 
-    async def _async_apply(self, value: float) -> None:
-        await self.controller.async_set_max(self._tablet_id, value)
+    async def _async_apply(self, value: float, *, riconcilia: bool = True) -> None:
+        await self.controller.async_set_max(self._tablet_id, value, riconcilia=riconcilia)

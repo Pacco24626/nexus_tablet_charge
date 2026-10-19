@@ -73,3 +73,8 @@ DEFAULT_MIN_LEVEL = 40
 DEFAULT_MAX_LEVEL = 80
 DEFAULT_CRITICAL = 15
 DEFAULT_STALE_HOURS = 3
+
+# --- Scheda Lovelace ----------------------------------------------------------
+# Servita dall'integrazione: nessuna risorsa da aggiungere a mano.
+CARD_URL_BASE = "/nexus_tablet_charge"
+CARD_FILE = "nexus-tablet-charge-card.js"
