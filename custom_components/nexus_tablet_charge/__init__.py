@@ -59,7 +59,15 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Ricarica dopo una modifica dalle opzioni."""
+    """Ricarica dopo una modifica dalle opzioni.
+
+    Tranne quando la modifica siamo noi: una soglia spostata dal cursore si
+    scrive nelle opzioni perche' sopravviva al riavvio, e ricostruire
+    controller ed entita' per un numero non ha senso.
+    """
+    controller: ChargeController | None = hass.data.get(DOMAIN, {}).get(entry.entry_id)
+    if controller is not None and controller.consuma_scrittura_nostra():
+        return
     await hass.config_entries.async_reload(entry.entry_id)
 
 

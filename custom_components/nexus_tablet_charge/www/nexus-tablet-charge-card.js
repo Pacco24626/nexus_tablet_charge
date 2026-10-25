@@ -321,7 +321,15 @@ class NexusTabletChargeCard extends HTMLElement {
 
     const stato = this._hass.states[this._config.entity];
     if (!stato) {
-      this.innerHTML = `<ha-card><div class="avviso">Entita' ${this._config.entity} non trovata.</div></ha-card>`;
+      // Il nome dell'entita' arriva dalla configurazione della plancia:
+      // si scrive con textContent, non dentro innerHTML, come per tutti
+      // gli altri campi.
+      const carta = document.createElement("ha-card");
+      const avviso = document.createElement("div");
+      avviso.className = "avviso";
+      avviso.textContent = `Entita' ${this._config.entity} non trovata.`;
+      carta.appendChild(avviso);
+      this.replaceChildren(carta);
       this._costruita = false;
       return;
     }
@@ -437,5 +445,5 @@ window.customCards.push({
   name: "Nexus Tablet Charge",
   description: "Ciclo di carica dei tablet a muro: livello, banda e comandi.",
   preview: true,
-  documentationURL: "https://github.com/Pacco24626/nexus_tablet_charge_card",
+  documentationURL: "https://github.com/Pacco24626/nexus_tablet_charge",
 });

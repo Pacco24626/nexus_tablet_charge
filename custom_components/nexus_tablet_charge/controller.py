@@ -66,10 +66,6 @@ class Tablet:
     charger_entity: str
     min_level: float
     max_level: float
-    # Vero se la soglia e' scritta nella configurazione: in quel caso vince
-    # lei, e lo stato ripristinato all'avvio non la tocca.
-    min_configurato: bool = False
-    max_configurato: bool = False
 
     # --- runtime ---
     enabled: bool = True
@@ -96,8 +92,6 @@ class ChargeController:
                 charger_entity=t[CONF_CHARGER_ENTITY],
                 min_level=float(t.get(CONF_MIN_LEVEL, DEFAULT_MIN_LEVEL)),
                 max_level=float(t.get(CONF_MAX_LEVEL, DEFAULT_MAX_LEVEL)),
-                min_configurato=CONF_MIN_LEVEL in t,
-                max_configurato=CONF_MAX_LEVEL in t,
             )
             for t in cfg.get(CONF_TABLETS, [])
         ]
@@ -106,6 +100,9 @@ class ChargeController:
 
         self._listeners: list[CALLBACK_TYPE] = []
         self._unsubs: list[CALLBACK_TYPE] = []
+        # Alzata quando siamo NOI a scrivere nelle opzioni (una soglia spostata
+        # dal cursore): quella scrittura non deve far ricaricare la voce.
+        self._scrittura_nostra = False
 
     # -------------------------------------------------------------------------
     # Ciclo di vita
@@ -170,6 +167,45 @@ class ChargeController:
     # -------------------------------------------------------------------------
     def get_tablet(self, tablet_id: str) -> Tablet | None:
         return next((t for t in self.tablets if t.id == tablet_id), None)
+
+    async def async_salva_soglia(self, tablet_id: str, chiave: str, value: float) -> None:
+        """Scrive la soglia nelle opzioni della voce, senza farla ricaricare.
+
+        La configurazione e' l'unica fonte di verita' delle soglie: un valore
+        scelto dal cursore deve finire li', altrimenti vive solo in memoria e
+        al primo riavvio torna quello di prima. Prima questo pezzo mancava e si
+        cercava di rimediare ripristinando lo stato dell'entita', che e' un
+        modo di tenere due verita' e sperare che coincidano.
+
+        La ricarica si salta perche' ricaricare la voce a ogni cursore mosso
+        ricostruirebbe controller ed entita' per cambiare un numero.
+        """
+        unito = {**self.entry.data, **self.entry.options}
+        tablets = [dict(t) for t in unito.get(CONF_TABLETS, [])]
+        for t in tablets:
+            if t.get(CONF_TABLET_ID) == tablet_id:
+                t[chiave] = value
+                break
+        else:
+            return
+
+        self._scrittura_nostra = True
+        cambiato = self.hass.config_entries.async_update_entry(
+            self.entry, options={**self.entry.options, CONF_TABLETS: tablets}
+        )
+        if not cambiato:
+            # Niente e' cambiato, quindi nessun ascoltatore scattera': la
+            # bandierina va riabbassata, o si mangerebbe la prossima ricarica
+            # buona. Si sbaglia di proposito nel verso innocuo: una ricarica in
+            # piu' non fa danni, una in meno lascerebbe le opzioni inerti.
+            self._scrittura_nostra = False
+
+    @callback
+    def consuma_scrittura_nostra(self) -> bool:
+        """Vero una volta sola, se l'ultima scrittura nelle opzioni era nostra."""
+        era_nostra = self._scrittura_nostra
+        self._scrittura_nostra = False
+        return era_nostra
 
     # `riconcilia=False` serve al ripristino degli stati all'avvio: li' il
     # valore va messo nel tablet, ma agire sui caricatori no. A boot in corso
