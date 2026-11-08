@@ -29,10 +29,11 @@ collegato il caricabatterie.
 
 ## Installazione via HACS
 
-1. HACS → menu ⋮ → **Repository personalizzate**
-2. URL `https://github.com/Pacco24626/nexus_tablet_charge`, categoria **Integration**
-3. Installa, poi **riavvia Home Assistant**
-4. **Impostazioni → Dispositivi e servizi → Aggiungi integrazione → Nexus Tablet Charge**
+1. In **HACS** — da Home Assistant 2026.11 si chiama **Marketplace**, in *Impostazioni* — cerca **Nexus Tablet Charge** e installala
+2. **Riavvia Home Assistant**
+3. **Impostazioni → Dispositivi e servizi → Aggiungi integrazione → Nexus Tablet Charge**
+
+> Per provare una versione non ancora pubblicata si può aggiungere questo repository a mano, come *repository personalizzato* di categoria **Integration**: `https://github.com/Pacco24626/nexus_tablet_charge`
 
 ## Configurazione
 
